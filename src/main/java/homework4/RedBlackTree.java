@@ -9,17 +9,28 @@ public class RedBlackTree {
         Node current = root;
         while (true) {
             if (current == null) {
-                current = node;
+                if (current == root) {
+                    root = node;
+                }
                 break;
             } else if (value > current.value) {
-                node.parent = current;
+                if (current.right == null) {
+                    node.parent = current;
+                    current.right = node;
+                    break;
+                }
                 current = current.right;
             } else {
-                node.parent = current;
+                if (current.left == null) {
+                    node.parent = current;
+                    current.left = node;
+                    break;
+                }
                 current = current.left;
             }
         }
-        rebalance(node.parent);
+        if (node == root) rebalance(node);
+        else rebalance(node.parent);
     }
 
     private void rebalance(Node node) {
@@ -42,6 +53,9 @@ public class RedBlackTree {
                 rightTurn(node.parent);
                 rebalance(node);
             }
+        }
+        if (node.left == null && node.right != null) {
+            leftTurn(node);
         }
     }
 
@@ -66,14 +80,14 @@ public class RedBlackTree {
     private void leftTurn(Node node) {
         Node parent = node.right;
         node.right = parent.left;
-        node.right.parent = node;
+//        node.right.parent = node;
         parent.left = node;
         parent.parent = node.parent;
         if (node != root) {
-            if (node.parent.left == node) {
-                node.parent.left = parent;
-            } else {
+            if (node.parent.right == node) {
                 node.parent.right = parent;
+            } else {
+                node.parent.left = parent;
             }
         } else {
             root = parent;
